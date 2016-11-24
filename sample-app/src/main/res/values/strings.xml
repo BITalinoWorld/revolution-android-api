@@ -1,0 +1,13 @@
+<resources>
+    <string name="app_name">PLUX API Sample App</string>
+
+    <!-- permission check dialog -->
+    <string name="permission_check_dialog_title">This app needs location access</string>
+    <string name="permission_check_dialog_message">Please grant location access so this app can detect PLUX\'s Bluetooth devices</string>
+    <string name="permission_check_dialog_positive_button">OK</string>
+
+    <!-- permission denied dialog -->
+    <string name="permission_denied_dialog_title">Functionality limited</string>
+    <string name="permission_denied_dialog_message">Since location access has no been granted, this app will not be able to discover bluetooth devices.</string>
+    <string name="permission_denied_dialog_positive_button">OK</string>
+</resources>

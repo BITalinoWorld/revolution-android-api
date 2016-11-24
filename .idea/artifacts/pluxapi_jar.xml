@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="pluxapi:jar">
+    <output-path>$PROJECT_DIR$/api/jar</output-path>
+    <root id="archive" name="api.jar">
+      <element id="module-output" name="api" />
+    </root>
+  </artifact>
+</component>
