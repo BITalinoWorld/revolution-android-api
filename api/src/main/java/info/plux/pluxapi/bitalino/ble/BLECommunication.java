@@ -13,12 +13,14 @@ import android.annotation.TargetApi;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
 import android.bluetooth.*;
-import android.content.*;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Build;
 import android.util.Log;
 import info.plux.pluxapi.CommandArguments;
 import info.plux.pluxapi.bitalino.*;
-import info.plux.pluxapi.bitalino.BITalinoDescription;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

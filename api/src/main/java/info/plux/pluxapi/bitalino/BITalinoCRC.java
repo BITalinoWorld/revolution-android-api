@@ -9,8 +9,6 @@
 */
 package info.plux.pluxapi.bitalino;
 
-import android.util.Log;
-
 public class BITalinoCRC {
     private static final String TAG = "BITalinoCRC";
 

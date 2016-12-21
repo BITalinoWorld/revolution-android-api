@@ -24,7 +24,6 @@ import android.os.Parcelable;
 import android.util.Log;
 import info.plux.pluxapi.CommandArguments;
 import info.plux.pluxapi.bitalino.*;
-import info.plux.pluxapi.bitalino.CommandDecoder;
 
 import java.io.IOException;
 import java.io.InputStream;

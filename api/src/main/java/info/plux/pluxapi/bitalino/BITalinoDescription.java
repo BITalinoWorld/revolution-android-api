@@ -54,7 +54,7 @@ public class BITalinoDescription implements Parcelable {
         this.fwVersion = in.readFloat();
     }
 
-    public static final Parcelable.Creator<BITalinoDescription> CREATOR = new Parcelable.Creator<BITalinoDescription>() {
+    public static final Creator<BITalinoDescription> CREATOR = new Creator<BITalinoDescription>() {
         @Override
         public BITalinoDescription createFromParcel(Parcel source) {
             return new BITalinoDescription(source);

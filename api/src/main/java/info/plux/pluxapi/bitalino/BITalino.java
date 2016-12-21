@@ -9,12 +9,9 @@
  */
 package info.plux.pluxapi.bitalino;
 
-import android.util.Log;
 import info.plux.pluxapi.CommandArguments;
 import info.plux.pluxapi.CommandProperties;
 import info.plux.pluxapi.Device;
-
-import java.util.Arrays;
 
 public enum BITalino implements Device<CommandProperties> {
 

@@ -9,7 +9,7 @@
 */
 package info.plux.pluxapi.bitalino;
 
-public class BITalinoException extends java.lang.Exception {
+public class BITalinoException extends Exception {
 
     private final int code;
 

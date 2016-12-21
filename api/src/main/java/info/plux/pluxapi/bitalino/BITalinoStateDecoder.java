@@ -11,7 +11,6 @@ package info.plux.pluxapi.bitalino;
 
 import android.annotation.TargetApi;
 import android.os.Build;
-import android.util.Log;
 
 import java.io.IOException;
 
