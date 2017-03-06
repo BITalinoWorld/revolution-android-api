@@ -220,7 +220,7 @@ public class BTHCommunication extends BITalinoCommunication {
     @Override
     protected boolean setFreq(int sampleRate) throws BITalinoException {
         CommandArguments commandArguments = new CommandArguments();
-        commandArguments.setSampleRate(validateSampleRate(1000));
+        commandArguments.setSampleRate(validateSampleRate(sampleRate));
 
         byte[] command = BITalino.SET_FREQ.getCommand(commandArguments).command;
 
