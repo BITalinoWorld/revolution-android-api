@@ -43,6 +43,7 @@ public class BTHCommunication extends BITalinoCommunication {
      */
     private final String ALARM           = "info.plux.pluxapi.bitalino.bth.BTHCommunication.ALARM";
     private final String ALARM_ID        = "info.plux.pluxapi.bitalino.bth.BTHCommunication.ALARM_ID";
+    private final String ALARM_DEVICE_ID = "info.plux.pluxapi.bitalino.bth.BTHCommunication.ALARM_DEVICE_ID";
     //Alarm Types
     private final int DATA_STREAM_ALARM      = 0;
     private final int WAIT_TIME_1SECONDS     = 1000;
@@ -111,33 +112,38 @@ public class BTHCommunication extends BITalinoCommunication {
         @Override
         public void onReceive(Context context, Intent intent) {
             int id = intent.getIntExtra(ALARM_ID, 0);
+            String identifier = intent.getStringExtra(ALARM_DEVICE_ID);
 
-            Intent alarmIntent = new Intent(ALARM);
-            alarmIntent.putExtra(ALARM_ID, id);
-            PendingIntent pendingIntent = PendingIntent.getBroadcast(activityContext, id, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
-            AlarmManager alarmManager = (AlarmManager) activityContext.getSystemService(Context.ALARM_SERVICE);
+            if(identifier != null && identifier.equals(mBluetoothDeviceAddress)) {
 
-            switch (id) {
-                case DATA_STREAM_ALARM:
-                    long deltaTime = Calendar.getInstance().getTimeInMillis() - lastSampleTimeStamp;
+                Intent alarmIntent = new Intent(ALARM);
+                alarmIntent.putExtra(ALARM_ID, id);
+                alarmIntent.putExtra(ALARM_DEVICE_ID, mBluetoothDeviceAddress);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(activityContext, id, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
+                AlarmManager alarmManager = (AlarmManager) activityContext.getSystemService(Context.ALARM_SERVICE);
 
-                    if (deltaTime >= WAIT_TIME_3SECONDS) {
-                        isDataStreaming = false;
-                        alarmManager.set(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis() + WAIT_TIME_5SECONDS, pendingIntent);
-                    }
+                switch (id) {
+                    case DATA_STREAM_ALARM:
+                        long deltaTime = Calendar.getInstance().getTimeInMillis() - lastSampleTimeStamp;
 
-                    if (!isDataStreaming && isConnected) {
-                        Log.e(TAG,"No Data Streaming");
+                        if (deltaTime >= WAIT_TIME_3SECONDS) {
+                            isDataStreaming = false;
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis() + WAIT_TIME_5SECONDS, pendingIntent);
+                        }
 
-                        connectionLost();
+                        if (!isDataStreaming && isConnected) {
+                            Log.e(TAG, "No Data Streaming");
 
-                        alarmManager.cancel(pendingIntent);
-                    } else if (isDataStreaming) {
-                        alarmManager.set(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis() + WAIT_TIME_5SECONDS, pendingIntent);
-                    } else {
-                        alarmManager.cancel(pendingIntent);
-                    }
-                    break;
+                            connectionLost();
+
+                            alarmManager.cancel(pendingIntent);
+                        } else if (isDataStreaming) {
+                            alarmManager.set(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis() + WAIT_TIME_5SECONDS, pendingIntent);
+                        } else {
+                            alarmManager.cancel(pendingIntent);
+                        }
+                        break;
+                }
             }
         }
     };
@@ -906,6 +912,7 @@ public class BTHCommunication extends BITalinoCommunication {
     private void setAlarm() {
         Intent alarmIntent = new Intent(ALARM);
         alarmIntent.putExtra(ALARM_ID, DATA_STREAM_ALARM);
+        alarmIntent.putExtra(ALARM_DEVICE_ID, mBluetoothDeviceAddress);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(activityContext, DATA_STREAM_ALARM, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
         AlarmManager alarmManager = (AlarmManager) activityContext.getSystemService(Context.ALARM_SERVICE);
         alarmManager.set(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis() + WAIT_TIME_2SECONDS, pendingIntent);

@@ -116,6 +116,7 @@ public class ScanActivity extends ListActivity {
         super.onResume();
 
         registerReceiver(scanDevicesUpdateReceiver, new IntentFilter(Constants.ACTION_MESSAGE_SCAN));
+        isScanDevicesUpdateReceiverRegistered = true;
 
         // Ensures Bluetooth is enabled on the device.  If Bluetooth is not currently enabled,
         // fire an intent to display a dialog asking the user to grant permission to enable it.

@@ -68,6 +68,13 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
 
     private float alpha = 0.25f;
 
+    /*
+     * Test with 2 device
+     */
+//    private BITalinoCommunication bitalino2;
+//    private String identifierBITalino2 = "20:16:07:18:15:94";
+
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -85,9 +92,11 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
           @Override
           public void handleMessage(Message msg) {
               Bundle bundle = msg.getData();
-              Parcelable frame = bundle.getParcelable(FRAME);
+              BITalinoFrame frame = bundle.getParcelable(FRAME);
 
-              if(frame.getClass().equals(BITalinoFrame.class)){ //BITalino
+              Log.d(TAG, frame.toString());
+
+              if(frame != null){ //BITalino
                   resultsTextView.setText(frame.toString());
               }
           }
@@ -119,6 +128,15 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
                 e.printStackTrace();
             }
         }
+
+//        if(bitalino2 != null){
+//            bitalino2.closeReceivers();
+//            try {
+//                bitalino2.disconnect();
+//            } catch (BITalinoException e) {
+//                e.printStackTrace();
+//            }
+//        }
     }
 
     /*
@@ -167,6 +185,7 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
         }
 
         bitalino = new BITalinoCommunicationFactory().getCommunication(communication,this, this);
+//        bitalino2 = new BITalinoCommunicationFactory().getCommunication(communication,this, this);
 
         connectButton.setOnClickListener(this);
         disconnectButton.setOnClickListener(this);
@@ -239,6 +258,14 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
                     else if(parcelable.getClass().equals(BITalinoDescription.class)){ //BITalino
                         isBITalino2 = ((BITalinoDescription)parcelable).isBITalino2();
                         resultsTextView.setText("isBITalino2: " + isBITalino2 + "; FwVersion: " + String.valueOf(((BITalinoDescription)parcelable).getFwVersion()));
+
+//                        if(identifier.equals(identifierBITalino2) && bitalino2 != null){
+//                            try {
+//                                bitalino2.start(new int[]{0,1,2,3,4,5}, 1);
+//                            } catch (BITalinoException e) {
+//                                e.printStackTrace();
+//                            }
+//                        }
                     }
                 }
             }
@@ -277,6 +304,12 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
                 } catch (BITalinoException e) {
                     e.printStackTrace();
                 }
+
+//                try {
+//                    bitalino2.connect(identifierBITalino2);
+//                } catch (BITalinoException e) {
+//                    e.printStackTrace();
+//                }
                 break;
             case R.id.disconnect_button:
                 try {
@@ -284,10 +317,16 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
                 } catch (BITalinoException e) {
                     e.printStackTrace();
                 }
+
+//                try {
+//                    bitalino2.disconnect();
+//                } catch (BITalinoException e) {
+//                    e.printStackTrace();
+//                }
                 break;
             case R.id.start_button:
                 try {
-                    bitalino.start(new int[]{0,1,2,3,4,5}, 100);
+                    bitalino.start(new int[]{0,1,2,3,4,5}, 1);
                 } catch (BITalinoException e) {
                     e.printStackTrace();
                 }
