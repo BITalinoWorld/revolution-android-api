@@ -359,7 +359,7 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
 
                 if(!isBITalino2){
                     digitalChannels[2] = (digital3RadioButton.isChecked()) ? 1 : 0;
-                    digitalChannels[4] = (digital4RadioButton.isChecked()) ? 1 : 0;
+                    digitalChannels[3] = (digital4RadioButton.isChecked()) ? 1 : 0;
                 }
 
                 try {
