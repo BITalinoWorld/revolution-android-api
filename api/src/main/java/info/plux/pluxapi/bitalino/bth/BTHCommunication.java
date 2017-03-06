@@ -98,6 +98,7 @@ public class BTHCommunication extends BITalinoCommunication {
     private boolean isBITalino2 = false;
     private boolean isStateCorrect = false;
     private int stateTotalBytes = 16;
+    private boolean isIncomingPairRequestReceiverRegistered = false;
     /*
      * Acquisition Variables
      */
@@ -105,6 +106,7 @@ public class BTHCommunication extends BITalinoCommunication {
     private boolean isDataStreaming = false;
     private long lastSampleTimeStamp;
     private boolean isWaitingForState = false, isWaitingForVersion = false; ;
+    private boolean isAlarmReceiverRegistered = false;
     private final BroadcastReceiver AlarmReceiver = new BroadcastReceiver() {
         @Override
         public void onReceive(Context context, Intent intent) {
@@ -155,11 +157,26 @@ public class BTHCommunication extends BITalinoCommunication {
     @Override
     public void init() {
         activityContext.registerReceiver(AlarmReceiver, new IntentFilter(ALARM));
+        isAlarmReceiverRegistered = true;
 
         //Set pairing request intent
         IntentFilter intentFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
         intentFilter.setPriority(IntentFilter.SYSTEM_HIGH_PRIORITY);
         activityContext.registerReceiver(incomingPairRequestReceiver, intentFilter);
+        isIncomingPairRequestReceiverRegistered = true;
+    }
+
+    @Override
+    public void closeReceivers() {
+        if(isAlarmReceiverRegistered){
+            activityContext.unregisterReceiver(AlarmReceiver);
+            isAlarmReceiverRegistered = false;
+        }
+
+        if(isIncomingPairRequestReceiverRegistered){
+            activityContext.unregisterReceiver(incomingPairRequestReceiver);
+            isIncomingPairRequestReceiverRegistered = false;
+        }
     }
 
     @Override
@@ -260,8 +277,6 @@ public class BTHCommunication extends BITalinoCommunication {
             setState(States.DISCONNECTED);
 
             stopThreads();
-
-            unregisterReceivers();
         } else {
             throw new BITalinoException(BITalinoErrorTypes.BT_DEVICE_NOT_CONNECTED);
         }
@@ -875,15 +890,6 @@ public class BTHCommunication extends BITalinoCommunication {
         intent.putExtra(IDENTIFIER, mBluetoothDeviceAddress);
         intent.putExtra(EXTRA_STATE_CHANGED, state.getId());
         activityContext.sendBroadcast(intent);
-    }
-
-    public void unregisterReceivers(){
-        activityContext.unregisterReceiver(AlarmReceiver);
-        activityContext.unregisterReceiver(incomingPairRequestReceiver);
-
-//        if(mDeviceScan != null){
-//            mDeviceScan.closeScanReceiver();
-//        }
     }
 
     private void sendReplyBroadcast(Parcelable extraArgument){

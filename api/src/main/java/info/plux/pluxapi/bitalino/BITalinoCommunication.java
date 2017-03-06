@@ -29,6 +29,8 @@ public abstract class BITalinoCommunication {
      */
     public abstract void init();
 
+    public abstract void closeReceivers();
+
     /**
      *
      */

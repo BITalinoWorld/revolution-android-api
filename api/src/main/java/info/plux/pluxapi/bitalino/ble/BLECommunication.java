@@ -367,6 +367,14 @@ public class BLECommunication extends BITalinoCommunication {
 
     }
 
+    @Override
+    public void closeReceivers() {
+        if(isLogAlarmRegistered){
+            activityContext.unregisterReceiver(LogAlarmReceiver);
+            isLogAlarmRegistered = false;
+        }
+    }
+
     /**
      * Return the current connection state.
      */
@@ -681,10 +689,7 @@ public class BLECommunication extends BITalinoCommunication {
 
             cancelLogAlarm(LOG_DATA_STREAM);
 
-            if(isLogAlarmRegistered){
-                activityContext.unregisterReceiver(LogAlarmReceiver);
-                isLogAlarmRegistered = false;
-            }
+            closeReceivers();
 
             mBluetoothGatt.disconnect();
         }

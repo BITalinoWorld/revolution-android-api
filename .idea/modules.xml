@@ -2,9 +2,9 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/api/api.iml" filepath="$PROJECT_DIR$/.idea/modules/api/api.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/hw-api.iml" filepath="$PROJECT_DIR$/.idea/modules/hw-api.iml" />
-      <module fileurl="file://$PROJECT_DIR$/.idea/modules/sample-app/sample-app.iml" filepath="$PROJECT_DIR$/.idea/modules/sample-app/sample-app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/api/api.iml" filepath="$PROJECT_DIR$/api/api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/revolution-android-api.iml" filepath="$PROJECT_DIR$/revolution-android-api.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sample-app/sample-app.iml" filepath="$PROJECT_DIR$/sample-app/sample-app.iml" />
     </modules>
   </component>
 </project>

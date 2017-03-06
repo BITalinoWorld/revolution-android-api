@@ -108,6 +108,16 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
 
         if(isUpdateReceiverRegistered) {
             unregisterReceiver(updateReceiver);
+            isUpdateReceiverRegistered = false;
+        }
+
+        if(bitalino != null){
+            bitalino.closeReceivers();
+            try {
+                bitalino.disconnect();
+            } catch (BITalinoException e) {
+                e.printStackTrace();
+            }
         }
     }
 
