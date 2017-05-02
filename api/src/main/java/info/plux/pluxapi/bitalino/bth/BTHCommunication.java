@@ -29,6 +29,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.UUID;
 
@@ -197,6 +198,12 @@ public class BTHCommunication extends BITalinoCommunication {
                 this.analogChannels = validateAnalogChannels(analogChannels);
                 this.totalBytes = calculateTotalBytes(analogChannels);
                 setFreq(sampleRate);
+
+                try {
+                    Thread.sleep(250);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
 
                 CommandArguments commandArguments = new CommandArguments();
                 commandArguments.setAnalogChannels(analogChannels);
@@ -734,7 +741,12 @@ public class BTHCommunication extends BITalinoCommunication {
                     if((System.currentTimeMillis() - aliveTime) > 3000){
                         System.gc();
 
-                        write(new byte[]{0x50});
+                        if(isBITalino2) {
+                            write(new byte[]{0x50});
+                        }
+                        else{
+                            write(new byte[]{0x03});
+                        }
 
                         aliveTime = System.currentTimeMillis();
                     }
@@ -806,22 +818,39 @@ public class BTHCommunication extends BITalinoCommunication {
                                     if (byteArray != null) {
                                         String description = "Description: " + new String(byteArray, StandardCharsets.UTF_8);
 
-                                        String[] versionArray = new String(byteArray, StandardCharsets.UTF_8).split("_v");
+                                        float version = 0;
 
-                                        if (Float.parseFloat(versionArray[1]) >= 5) {
-                                            isBITalino2 = true;
-                                            Log.d(TAG, "isBITalino2: " + isBITalino2 + " -> " + Float.parseFloat(versionArray[1]));
-                                            if(Float.parseFloat(versionArray[1]) >= 5.2f){
-                                                isStateCorrect = true;
-                                                stateTotalBytes = 17;
+                                        if(bluetoothDevice.getName() != null && bluetoothDevice.getName().equals("bitalino")){
+                                            String[] versionArray = new String(byteArray, StandardCharsets.UTF_8).split("_");
+
+                                            isBITalino2 = false;
+
+                                            Log.d(TAG, Arrays.toString(versionArray));
+
+                                            version = Float.parseFloat(versionArray[1].substring(1,4));
+
+                                        }
+                                        else {
+                                            String[] versionArray = new String(byteArray, StandardCharsets.UTF_8).split("_v");
+
+                                            if (Float.parseFloat(versionArray[1]) >= 5) {
+                                                isBITalino2 = true;
+                                                Log.d(TAG, "isBITalino2: " + isBITalino2 + " -> " + Float.parseFloat(versionArray[1]));
+                                                if (Float.parseFloat(versionArray[1]) >= 5.2f) {
+                                                    isStateCorrect = true;
+                                                    stateTotalBytes = 17;
+                                                }
                                             }
+
+                                            version = Float.parseFloat(versionArray[1]);
                                         }
 
                                         Log.d(TAG, description);
+                                        Log.d(TAG, "version: " + version);
 
                                         isWaitingForVersion = false;
 
-                                        sendReplyBroadcast(new BITalinoDescription(isBITalino2, Float.parseFloat(versionArray[1])));
+                                        sendReplyBroadcast(new BITalinoDescription(isBITalino2, version));
 
                                     } else {
                                         break;

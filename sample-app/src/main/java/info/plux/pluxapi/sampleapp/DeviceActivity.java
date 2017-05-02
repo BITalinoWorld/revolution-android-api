@@ -326,7 +326,7 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
                 break;
             case R.id.start_button:
                 try {
-                    bitalino.start(new int[]{0,1,2,3,4,5}, 1);
+                    bitalino.start(new int[]{0,1,2,3,4,5}, 10);
                 } catch (BITalinoException e) {
                     e.printStackTrace();
                 }
