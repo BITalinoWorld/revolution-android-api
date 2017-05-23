@@ -821,14 +821,13 @@ public class BTHCommunication extends BITalinoCommunication {
                                         float version = 0;
 
                                         if(bluetoothDevice.getName() != null && bluetoothDevice.getName().equals("bitalino")){
-                                            String[] versionArray = new String(byteArray, StandardCharsets.UTF_8).split("_");
+//                                            String[] versionArray = new String(byteArray, StandardCharsets.UTF_8).split("_");
 
                                             isBITalino2 = false;
-
-                                            Log.d(TAG, Arrays.toString(versionArray));
-
-                                            version = Float.parseFloat(versionArray[1].substring(1,4));
-
+//
+//                                            Log.d(TAG, Arrays.toString(versionArray));
+//
+//                                            version = Float.parseFloat(versionArray[1].substring(1,4));
                                         }
                                         else {
                                             String[] versionArray = new String(byteArray, StandardCharsets.UTF_8).split("_v");
