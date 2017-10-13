@@ -55,12 +55,28 @@ public class BITalinoFrame implements Parcelable {
         this.analog[pos] = value;
     }
 
+    public int[] getAnalogArray() {
+        return analog;
+    }
+
+    public void  setAnalogArray(int[] analog){
+        this.analog = analog;
+    }
+
     public int getDigital(final int pos) {
         return digital[pos];
     }
 
     public void setDigital(final int pos, final int value) throws IndexOutOfBoundsException {
         this.digital[pos] = value;
+    }
+
+    public int[] getDigitalArray() {
+        return digital;
+    }
+
+    public void  setDigitalArray(int[] digital){
+        this.digital = digital;
     }
 
     public String toString(){
