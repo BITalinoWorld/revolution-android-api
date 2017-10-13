@@ -242,7 +242,8 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
                 if(intent.hasExtra(EXTRA_DATA)){
                     Parcelable parcelable = intent.getParcelableExtra(EXTRA_DATA);
                     if(parcelable.getClass().equals(BITalinoFrame.class)){ //BITalino
-                        resultsTextView.setText(parcelable.toString());
+                        BITalinoFrame frame = (BITalinoFrame) parcelable;
+                        resultsTextView.setText(frame.toString());
                     }
                 }
             }
@@ -326,7 +327,7 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
                 break;
             case R.id.start_button:
                 try {
-                    bitalino.start(new int[]{0,1,2,3,4,5}, 10);
+                    bitalino.start(new int[]{0,1,2,3,4,5}, 1000);
                 } catch (BITalinoException e) {
                     e.printStackTrace();
                 }

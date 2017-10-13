@@ -30,6 +30,7 @@ public interface Constants {
 
     String EXTRA_STATE_CHANGED              = "info.plux.pluxapi.EXTRA_STATE_CHANGED";
     String EXTRA_DEVICE_SCAN                = "info.plux.pluxapi.EXTRA_DEVICE_SCAN";
+    String EXTRA_DEVICE_RSSI                = "info.plux.pluxapi.EXTRA_DEVICE_RSSI";
     String EXTRA_DESCRIPTION                = "info.plux.pluxapi.EXTRA_DESCRIPTION";
     String EXTRA_DATA                       = "info.plux.pluxapi.EXTRA_DATA";
     String EXTRA_EVENT                      = "info.plux.pluxapi.EXTRA_EVENT";

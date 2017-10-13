@@ -42,6 +42,7 @@ public class BTHDeviceScan {
                 if (BluetoothDevice.ACTION_FOUND.equals(action)) {
 
                     BluetoothDevice device = intent.getParcelableExtra(BluetoothDevice.EXTRA_DEVICE);
+                    int rssi = intent.getShortExtra(BluetoothDevice.EXTRA_RSSI,Short.MIN_VALUE);
 
                     Log.d(TAG, "device found: " + device.getName() + " - " + device.getAddress());
 
@@ -49,6 +50,7 @@ public class BTHDeviceScan {
                     if (testPLUXDevice(device.getName(), device.getAddress())) {
                         Intent scanIntent = new Intent(Constants.ACTION_MESSAGE_SCAN);
                         scanIntent.putExtra(Constants.EXTRA_DEVICE_SCAN, device);
+                        scanIntent.putExtra(Constants.EXTRA_DEVICE_RSSI, rssi);
                         activityContext.sendBroadcast(scanIntent);
                     }
                 }
