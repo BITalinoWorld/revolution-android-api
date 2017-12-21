@@ -40,18 +40,24 @@ public class BITalinoFrameDecoder {
                 frame.setDigital(3, (buffer[j - 1] >> 4) & 0x01);
 
                 // parse buffer frame
-                if (totalBytes >= 3)
+                if (analogChannels.length >= 1) {
                     frame.setAnalog(analogChannels[0], (((buffer[j - 1] & 0xF) << 6) | ((buffer[j - 2] & 0XFC) >> 2)) & 0x3ff);
-                if (totalBytes >= 4)
-                    frame.setAnalog(analogChannels[1],(((buffer[j - 2] & 0x3) << 8) | (buffer[j - 3]) & 0xff) & 0x3ff);
-                if (totalBytes >= 6)
+                }
+                if (analogChannels.length >= 2) {
+                    frame.setAnalog(analogChannels[1], (((buffer[j - 2] & 0x3) << 8) | (buffer[j - 3]) & 0xff) & 0x3ff);
+                }
+                if (analogChannels.length >= 3) {
                     frame.setAnalog(analogChannels[2], (((buffer[j - 4] & 0xff) << 2) | (((buffer[j - 5] & 0xc0) >> 6))) & 0x3ff);
-                if (totalBytes >= 7)
+                }
+                if (analogChannels.length >= 4) {
                     frame.setAnalog(analogChannels[3], (((buffer[j - 5] & 0x3F) << 4) | ((buffer[j - 6] & 0xf0) >> 4)) & 0x3ff);
-                if (totalBytes >= 8)
+                }
+                if (analogChannels.length >= 5) {
                     frame.setAnalog(analogChannels[4], (((buffer[j - 6] & 0x0F) << 2) | ((buffer[j - 7] & 0xc0) >> 6)) & 0x3f);
-                if (totalBytes == 11)
+                }
+                if (analogChannels.length >= 6) {
                     frame.setAnalog(analogChannels[5], (buffer[j - 7] & 0x3F));
+                }
             } else {
                 frame = new BITalinoFrame(identifier);
                 frame.setSequence(-1);

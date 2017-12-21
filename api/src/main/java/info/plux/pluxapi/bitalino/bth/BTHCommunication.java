@@ -105,49 +105,7 @@ public class BTHCommunication extends BITalinoCommunication {
      * Acquisition Variables
      */
     private CommandDecoder commandDecoder = new CommandDecoder();
-    private boolean isDataStreaming = false;
-    private long lastSampleTimeStamp;
-    private boolean isWaitingForState = false, isWaitingForVersion = false; ;
-    private boolean isAlarmReceiverRegistered = false;
-    private final BroadcastReceiver AlarmReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            int id = intent.getIntExtra(ALARM_ID, 0);
-            String identifier = intent.getStringExtra(ALARM_DEVICE_ID);
-
-            if(identifier != null && identifier.equals(mBluetoothDeviceAddress)) {
-
-                Intent alarmIntent = new Intent(ALARM);
-                alarmIntent.putExtra(ALARM_ID, id);
-                alarmIntent.putExtra(ALARM_DEVICE_ID, mBluetoothDeviceAddress);
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(activityContext, id, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
-                AlarmManager alarmManager = (AlarmManager) activityContext.getSystemService(Context.ALARM_SERVICE);
-
-                switch (id) {
-                    case DATA_STREAM_ALARM:
-                        long deltaTime = Calendar.getInstance().getTimeInMillis() - lastSampleTimeStamp;
-
-                        if (deltaTime >= WAIT_TIME_3SECONDS) {
-                            isDataStreaming = false;
-                            alarmManager.set(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis() + WAIT_TIME_5SECONDS, pendingIntent);
-                        }
-
-                        if (!isDataStreaming && isConnected) {
-                            Log.e(TAG, "No Data Streaming");
-
-                            connectionLost();
-
-                            alarmManager.cancel(pendingIntent);
-                        } else if (isDataStreaming) {
-                            alarmManager.set(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis() + WAIT_TIME_5SECONDS, pendingIntent);
-                        } else {
-                            alarmManager.cancel(pendingIntent);
-                        }
-                        break;
-                }
-            }
-        }
-    };
+    private boolean isWaitingForState = false, isWaitingForVersion = false;
 
     private int previousSeq = 0;
 
@@ -163,8 +121,6 @@ public class BTHCommunication extends BITalinoCommunication {
 
     @Override
     public void init() {
-        activityContext.registerReceiver(AlarmReceiver, new IntentFilter(ALARM));
-        isAlarmReceiverRegistered = true;
 
         //Set pairing request intent
         IntentFilter intentFilter = new IntentFilter(BluetoothDevice.ACTION_PAIRING_REQUEST);
@@ -175,11 +131,6 @@ public class BTHCommunication extends BITalinoCommunication {
 
     @Override
     public void closeReceivers() {
-        if(isAlarmReceiverRegistered){
-            activityContext.unregisterReceiver(AlarmReceiver);
-            isAlarmReceiverRegistered = false;
-        }
-
         if(isIncomingPairRequestReceiverRegistered){
             activityContext.unregisterReceiver(incomingPairRequestReceiver);
             isIncomingPairRequestReceiverRegistered = false;
@@ -253,6 +204,10 @@ public class BTHCommunication extends BITalinoCommunication {
     public boolean stop() throws BITalinoException {
         if(isConnected) {
             if (currentState.equals(States.ACQUISITION_OK)) {
+
+                if(commandDecoder != null) {
+                    commandDecoder.reset();
+                }
 
                 CommandArguments commandArguments = new CommandArguments();
                 byte[] command = BITalino.STOP.getCommand(commandArguments).command;
@@ -733,10 +688,6 @@ public class BTHCommunication extends BITalinoCommunication {
                     // Read from the InputStream
                     bytes = mmInStream.read(buffer);
 
-//                    Log.d(TAG, "bytes: " + bytes);
-//
-//                    Log.d(TAG, "buffer[0]: " + String.format("%02X",buffer[0]));
-
                     //fix for "sleepy" bth connection
                     if((System.currentTimeMillis() - aliveTime) > 3000){
                         System.gc();
@@ -752,19 +703,13 @@ public class BTHCommunication extends BITalinoCommunication {
                     }
 
                     if (bytes > 0) {
-//                        Log.d(TAG, "totalBytes: " + totalBytes);
                         if (inAcquisition) {
 
                             byte[][] dataReceived = commandDecoder.parseReceivedData(CommandDecoder.CommandType.DATA_FRAMES, buffer, bytes, totalBytes);
 
-//                            Log.d(TAG, "dataReceived.length: " + dataReceived.length);
-
                             for (byte[] byteArray : dataReceived) {
                                 if (byteArray != null) {
                                     BITalinoFrame bitalinoFrame = null;
-
-                                    isDataStreaming = true;
-                                    lastSampleTimeStamp = Calendar.getInstance().getTimeInMillis();
 
                                     try {
                                         bitalinoFrame = BITalinoFrameDecoder.decode(mBluetoothDeviceAddress, byteArray, analogChannels, totalBytes);
@@ -788,8 +733,6 @@ public class BTHCommunication extends BITalinoCommunication {
 
                                 byte[][] dataReceived = commandDecoder.parseReceivedData(CommandDecoder.CommandType.STATE, buffer, bytes, 16);
 
-                                Log.d(TAG, "dataReceived.length: " + dataReceived.length);
-
                                 for (byte[] byteArray : dataReceived) {
                                     if (byteArray != null) {
                                         BITalinoState bitalinoState = null;
@@ -799,8 +742,6 @@ public class BTHCommunication extends BITalinoCommunication {
                                         } catch (IOException | BITalinoException e) {
                                             e.printStackTrace();
                                         }
-
-                                        Log.d(TAG, "BITalino state: " + bitalinoState.toString());
 
                                         isWaitingForState = false;
 
@@ -816,8 +757,6 @@ public class BTHCommunication extends BITalinoCommunication {
 
                                 for (byte[] byteArray : dataReceived) {
                                     if (byteArray != null) {
-                                        String description = "Description: " + new String(byteArray, StandardCharsets.UTF_8);
-
                                         float version = 0;
 
                                         if(bluetoothDevice.getName() != null && bluetoothDevice.getName().equals("bitalino")){
@@ -844,9 +783,6 @@ public class BTHCommunication extends BITalinoCommunication {
                                             version = Float.parseFloat(versionArray[1]);
                                         }
 
-                                        Log.d(TAG, description);
-                                        Log.d(TAG, "version: " + version);
-
                                         isWaitingForVersion = false;
 
                                         sendReplyBroadcast(new BITalinoDescription(isBITalino2, version));
@@ -861,6 +797,11 @@ public class BTHCommunication extends BITalinoCommunication {
 
                 } catch (IOException e) {
                     Log.e(TAG, "disconnected", e);
+
+                    if(commandDecoder != null) {
+                        commandDecoder.reset();
+                    }
+
                     try {
                         mmSocket.close();
                     } catch (IOException e1) {

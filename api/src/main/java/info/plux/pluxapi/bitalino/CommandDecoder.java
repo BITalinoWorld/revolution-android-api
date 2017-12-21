@@ -99,4 +99,8 @@ public class CommandDecoder {
         return receivedData;
     }
 
+    public void reset(){
+        incompleteByteArray = null;
+    }
+
 }
