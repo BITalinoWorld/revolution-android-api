@@ -553,10 +553,6 @@ public class BTHCommunication extends BITalinoCommunication {
 
         // Send a failure message back to the Activity
         setState(States.DISCONNECTED);
-
-        // Start the service over to restart listening mode
-        connect(bluetoothDevice);
-
     }
 
 

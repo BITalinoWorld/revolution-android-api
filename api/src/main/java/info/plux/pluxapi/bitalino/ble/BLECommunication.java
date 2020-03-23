@@ -126,12 +126,7 @@ public class BLECommunication extends BITalinoCommunication {
 
                 Log.i(TAG, mBluetoothDeviceAddress + " - Disconnected from GATT server.");
 
-                if(disconnectFired){
-                    close();
-                }
-                else{
-                    reconnect();
-                }
+                close();
 
                 isConnected = false;
                 isReady = false;
@@ -268,7 +263,7 @@ public class BLECommunication extends BITalinoCommunication {
                     case LOG_READY:
                         if (!isReady) {
                             payLoad = "[" + mBluetoothDeviceAddress + "] " + "Device Not Ready";
-                            reconnect();
+                            //reconnect();
                         } else {
                             payLoad = "[" + mBluetoothDeviceAddress + "] " + "Device Ready";
                             alarmManager.cancel(pendingIntent);
@@ -292,7 +287,7 @@ public class BLECommunication extends BITalinoCommunication {
                         if (!isDataStreaming && isConnected) {
                             payLoad = "[" + mBluetoothDeviceAddress + "] " + "No Data Streaming";
 
-                            reconnect();
+                            //reconnect();
 
                             alarmManager.cancel(pendingIntent);
                         } else if (isDataStreaming) {
@@ -663,7 +658,7 @@ public class BLECommunication extends BITalinoCommunication {
             }
 
             //device.createBond();
-            mBluetoothGatt = devicePlux.connectGatt(activityContext, true, mGattCallback);
+            mBluetoothGatt = devicePlux.connectGatt(activityContext, false, mGattCallback);
             Log.d(TAG, mBluetoothDeviceAddress + " - Trying to create a new connection.");
 
             setState(States.CONNECTING);
