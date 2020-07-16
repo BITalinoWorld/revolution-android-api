@@ -658,7 +658,12 @@ public class BLECommunication extends BITalinoCommunication {
             }
 
             //device.createBond();
-            mBluetoothGatt = devicePlux.connectGatt(activityContext, false, mGattCallback);
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+                mBluetoothGatt = devicePlux.connectGatt(activityContext, false, mGattCallback, BluetoothDevice.TRANSPORT_LE);
+            } else {
+                mBluetoothGatt = devicePlux.connectGatt(activityContext, false, mGattCallback);
+            }
+
             Log.d(TAG, mBluetoothDeviceAddress + " - Trying to create a new connection.");
 
             setState(States.CONNECTING);
