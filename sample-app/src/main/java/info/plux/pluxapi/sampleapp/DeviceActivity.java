@@ -181,7 +181,7 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
         Communication communication = Communication.getById(bluetoothDevice.getType());
         Log.d(TAG, "Communication: " + communication.name());
         if(communication.equals(Communication.DUAL)){
-            communication = Communication.BLE;
+            communication = Communication.BTH;
         }
 
         bitalino = new BITalinoCommunicationFactory().getCommunication(communication,this, this);
