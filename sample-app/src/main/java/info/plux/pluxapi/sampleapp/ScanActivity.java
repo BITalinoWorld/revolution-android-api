@@ -22,6 +22,8 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
+import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.*;
 import android.widget.BaseAdapter;
@@ -32,8 +34,12 @@ import info.plux.pluxapi.BTHDeviceScan;
 import info.plux.pluxapi.Constants;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class ScanActivity extends ListActivity {
     private String TAG = getClass().getSimpleName();
@@ -46,8 +52,8 @@ public class ScanActivity extends ListActivity {
     private BTHDeviceScan bthDeviceScan;
     private boolean isScanDevicesUpdateReceiverRegistered = false;
 
+    private static final int PERMISSION_REQUEST_MULTIPLE_PERMSSIONS = 123;
     private static final int REQUEST_ENABLE_BT = 1;
-    private static final int PERMISSION_REQUEST_COARSE_LOCATION = 2;
 
     // Stops scanning after 10 seconds.
     private static final long SCAN_PERIOD = 10000;
@@ -146,11 +152,21 @@ public class ScanActivity extends ListActivity {
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
         switch (requestCode) {
-            case PERMISSION_REQUEST_COARSE_LOCATION:
-                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    Log.d(TAG, "coarse location permission granted");
-                }
-                else{
+            case PERMISSION_REQUEST_MULTIPLE_PERMSSIONS:
+                Map<String, Integer> perms = new HashMap<String, Integer>();
+                // Initial
+                perms.put(Manifest.permission.ACCESS_COARSE_LOCATION, PackageManager.PERMISSION_GRANTED);
+                perms.put(Manifest.permission.WRITE_EXTERNAL_STORAGE, PackageManager.PERMISSION_GRANTED);
+                // Fill with results
+                for (int i = 0; i < permissions.length; i++)
+                    perms.put(permissions[i], grantResults[i]);
+                // Check if all permissions were granted.
+                if (perms.get(Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_GRANTED
+                        && perms.get(Manifest.permission.WRITE_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED) {
+                    // All Permissions Granted
+                    Log.d(TAG, "All Permissions Granted");
+                } else {
+                    // Permission Denied
                     final AlertDialog.Builder builder = new AlertDialog.Builder(this)
                             .setTitle(getString(R.string.permission_denied_dialog_title))
                             .setMessage(getString(R.string.permission_denied_dialog_message))
@@ -158,7 +174,7 @@ public class ScanActivity extends ListActivity {
                             .setOnDismissListener(new DialogInterface.OnDismissListener() {
                                 @Override
                                 public void onDismiss(DialogInterface dialogInterface) {
-
+                                    finish();
                                 }
                             });
                     builder.show();
@@ -243,7 +259,8 @@ public class ScanActivity extends ListActivity {
     private void permissionCheck(){
         if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
             //Android Marshmallow and above permission check
-            if(this.checkSelfPermission(ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            if(this.checkSelfPermission(ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED ||
+                    this.checkSelfPermission(WRITE_EXTERNAL_STORAGE) != PackageManager.PERMISSION_GRANTED){
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(getString(R.string.permission_check_dialog_title))
                         .setMessage(getString(R.string.permission_check_dialog_message))
@@ -252,12 +269,35 @@ public class ScanActivity extends ListActivity {
                             @TargetApi(Build.VERSION_CODES.M)
                             @Override
                             public void onDismiss(DialogInterface dialogInterface) {
-                                requestPermissions(new String[]{Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_COARSE_LOCATION);
+                                List<String> permissionsNeeded = new ArrayList<String>();
+
+                                final List<String> permissionsList = new ArrayList<String>();
+                                if (!addPermission(permissionsList, Manifest.permission.ACCESS_COARSE_LOCATION)) {
+                                    permissionsNeeded.add("Bluetooth Scan");
+                                }
+                                if (!addPermission(permissionsList, Manifest.permission.WRITE_EXTERNAL_STORAGE)) {
+                                    permissionsNeeded.add("Write in Storage");
+                                }
+
+                                if (permissionsList.size() > 0) {
+                                    requestPermissions(permissionsList.toArray(new String[permissionsList.size()]),
+                                            PERMISSION_REQUEST_MULTIPLE_PERMSSIONS);
+                                }
                             }
                         });
                 builder.show();
             }
         }
+    }
+
+    private boolean addPermission(List<String> permissionsList, String permission) {
+        if (ContextCompat.checkSelfPermission(this, permission) != PackageManager.PERMISSION_GRANTED) {
+            permissionsList.add(permission);
+            // Check for Rationale Option
+            if (!ActivityCompat.shouldShowRequestPermissionRationale(this, permission))
+                return false;
+        }
+        return true;
     }
 
     // Adapter for holding devices found through scanning.

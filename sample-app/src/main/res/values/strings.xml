@@ -8,6 +8,8 @@
 
     <!-- permission denied dialog -->
     <string name="permission_denied_dialog_title">Functionality limited</string>
-    <string name="permission_denied_dialog_message">Since location access has no been granted, this app will not be able to discover bluetooth devices.</string>
+    <string name="permission_denied_dialog_message">Since location access or read to external
+        storage permission has not been granted, this app will not be able to discover bluetooth
+        devices or write acquired data to file.\nAPP will now be closed.</string>
     <string name="permission_denied_dialog_positive_button">OK</string>
 </resources>
