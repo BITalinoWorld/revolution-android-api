@@ -100,6 +100,11 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
               if(frame != null){ //BITalino
                   resultsTextView.setText(frame.toString());
               }
+
+              // Write data to file.
+              if(csvFileWriter != null) {
+                  csvFileWriter.writeFrameToFile(frame);
+              }
           }
         };
     }
