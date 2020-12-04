@@ -13,8 +13,9 @@ import android.widget.*;
 import info.plux.pluxapi.Communication;
 import info.plux.pluxapi.bitalino.*;
 import info.plux.pluxapi.bitalino.bth.OnBITalinoDataAvailable;
-import info.plux.pluxapi.sampleapp.utils.CsvFileWriter;
 
+import java.util.ArrayList;
+import java.util.List;
 
 import static info.plux.pluxapi.Constants.*;
 
@@ -23,13 +24,11 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
 
     public final static String EXTRA_DEVICE = "info.plux.pluxapi.sampleapp.DeviceActivity.EXTRA_DEVICE";
     public final static String FRAME = "info.plux.pluxapi.sampleapp.DeviceActivity.Frame";
-    public final static String DIR_NAME = "BITalinoRevFiles";
 
     private BluetoothDevice bluetoothDevice;
 
     private BITalinoCommunication bitalino;
     private boolean isBITalino2 = false;
-    private CsvFileWriter csvFileWriter;
 
 
     private Handler handler;
@@ -225,19 +224,10 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
                     case CONNECTING:
                         break;
                     case CONNECTED:
-                        // Close the file where data was stored.
-                        if(csvFileWriter != null){
-                            csvFileWriter.closeCsvFile();
-                            csvFileWriter = null;
-                        }
                         break;
                     case ACQUISITION_TRYING:
                         break;
                     case ACQUISITION_OK:
-                        // Try to initialise the custom csvFileWriter object.
-                        if(csvFileWriter == null){
-                            csvFileWriter = new CsvFileWriter(getApplicationContext(), DIR_NAME, true);
-                        }
                         break;
                     case ACQUISITION_STOPPING:
                         break;
@@ -254,11 +244,6 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
                     if(parcelable.getClass().equals(BITalinoFrame.class)){ //BITalino
                         BITalinoFrame frame = (BITalinoFrame) parcelable;
                         resultsTextView.setText(frame.toString());
-
-                        // Write data to file.
-                        if(csvFileWriter != null) {
-                            csvFileWriter.writeFrameToFile(frame);
-                        }
                     }
                 }
             }
