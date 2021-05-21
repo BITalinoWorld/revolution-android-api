@@ -227,7 +227,7 @@ public class BTHCommunication extends BITalinoCommunication {
         } else {
             throw new BITalinoException(BITalinoErrorTypes.BT_DEVICE_NOT_CONNECTED);
         }
-        return false;
+        return true;
     }
 
     @Override
