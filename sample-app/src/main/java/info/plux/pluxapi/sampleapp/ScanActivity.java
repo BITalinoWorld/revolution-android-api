@@ -1,12 +1,12 @@
 /*
-*
-* Copyright (c) PLUX S.A., All Rights Reserved.
-* (www.plux.info)
-*
-* This software is the proprietary information of PLUX S.A.
-* Use is subject to license terms.
-*
-*/
+ *
+ * Copyright (c) PLUX S.A., All Rights Reserved.
+ * (www.plux.info)
+ *
+ * This software is the proprietary information of PLUX S.A.
+ * Use is subject to license terms.
+ *
+ */
 package info.plux.pluxapi.sampleapp;
 
 import android.Manifest;
@@ -28,6 +28,7 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import info.plux.pluxapi.BTHDeviceScan;
 import info.plux.pluxapi.Constants;
 
@@ -99,14 +100,11 @@ public class ScanActivity extends ListActivity {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.menu_scan:
-                deviceListAdapter.clear();
-                scanDevice(true);
-                break;
-            case R.id.menu_stop:
-                scanDevice(false);
-                break;
+        if (item.getItemId() == R.id.menu_scan) {
+            deviceListAdapter.clear();
+            scanDevice(true);
+        } else if (item.getItemId() == R.id.menu_stop) {
+            scanDevice(false);
         }
         return true;
     }
@@ -145,27 +143,22 @@ public class ScanActivity extends ListActivity {
 
     @Override
     public void onRequestPermissionsResult(int requestCode, String[] permissions, int[] grantResults) {
-        switch (requestCode) {
-            case PERMISSION_REQUEST_COARSE_LOCATION:
-                if(grantResults[0] == PackageManager.PERMISSION_GRANTED){
-                    Log.d(TAG, "coarse location permission granted");
-                }
-                else{
-                    final AlertDialog.Builder builder = new AlertDialog.Builder(this)
-                            .setTitle(getString(R.string.permission_denied_dialog_title))
-                            .setMessage(getString(R.string.permission_denied_dialog_message))
-                            .setPositiveButton(getString(R.string.permission_denied_dialog_positive_button), null)
-                            .setOnDismissListener(new DialogInterface.OnDismissListener() {
-                                @Override
-                                public void onDismiss(DialogInterface dialogInterface) {
+        if (requestCode == PERMISSION_REQUEST_COARSE_LOCATION) {
+            if (grantResults[0] == PackageManager.PERMISSION_GRANTED) {
+                Log.d(TAG, "coarse location permission granted");
+            } else {
+                final AlertDialog.Builder builder = new AlertDialog.Builder(this)
+                        .setTitle(getString(R.string.permission_denied_dialog_title))
+                        .setMessage(getString(R.string.permission_denied_dialog_message))
+                        .setPositiveButton(getString(R.string.permission_denied_dialog_positive_button), null)
+                        .setOnDismissListener(new DialogInterface.OnDismissListener() {
+                            @Override
+                            public void onDismiss(DialogInterface dialogInterface) {
 
-                                }
-                            });
-                    builder.show();
-                }
-                break;
-            default:
-                return;
+                            }
+                        });
+                builder.show();
+            }
         }
     }
 
@@ -180,11 +173,11 @@ public class ScanActivity extends ListActivity {
     protected void onDestroy() {
         super.onDestroy();
 
-        if(bthDeviceScan != null){
+        if (bthDeviceScan != null) {
             bthDeviceScan.closeScanReceiver();
         }
 
-        if(isScanDevicesUpdateReceiverRegistered){
+        if (isScanDevicesUpdateReceiverRegistered) {
             unregisterReceiver(scanDevicesUpdateReceiver);
         }
     }
@@ -228,10 +221,10 @@ public class ScanActivity extends ListActivity {
         public void onReceive(Context context, Intent intent) {
             String action = intent.getAction();
 
-            if(action.equals(Constants.ACTION_MESSAGE_SCAN)){
+            if (action.equals(Constants.ACTION_MESSAGE_SCAN)) {
                 BluetoothDevice bluetoothDevice = intent.getParcelableExtra(Constants.EXTRA_DEVICE_SCAN);
 
-                if(bluetoothDevice != null){
+                if (bluetoothDevice != null) {
                     deviceListAdapter.addDevice(bluetoothDevice);
                     deviceListAdapter.notifyDataSetChanged();
                 }
@@ -240,10 +233,10 @@ public class ScanActivity extends ListActivity {
     };
 
 
-    private void permissionCheck(){
-        if(Build.VERSION.SDK_INT >= Build.VERSION_CODES.M){
+    private void permissionCheck() {
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             //Android Marshmallow and above permission check
-            if(this.checkSelfPermission(ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED){
+            if (this.checkSelfPermission(ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
                 final AlertDialog.Builder builder = new AlertDialog.Builder(this);
                 builder.setTitle(getString(R.string.permission_check_dialog_title))
                         .setMessage(getString(R.string.permission_check_dialog_message))
@@ -262,8 +255,8 @@ public class ScanActivity extends ListActivity {
 
     // Adapter for holding devices found through scanning.
     private class DeviceListAdapter extends BaseAdapter {
-        private ArrayList<BluetoothDevice> devices;
-        private LayoutInflater mInflator;
+        private final ArrayList<BluetoothDevice> devices;
+        private final LayoutInflater mInflator;
 
         public DeviceListAdapter() {
             super();
@@ -272,7 +265,7 @@ public class ScanActivity extends ListActivity {
         }
 
         public void addDevice(BluetoothDevice device) {
-            if(!devices.contains(device)) {
+            if (!devices.contains(device)) {
                 devices.add(device);
             }
         }
@@ -318,8 +311,7 @@ public class ScanActivity extends ListActivity {
             final String deviceName = device.getName();
             if (deviceName != null && deviceName.length() > 0) {
                 viewHolder.deviceName.setText(deviceName);
-            }
-            else {
+            } else {
                 viewHolder.deviceName.setText("BITalino");
             }
             viewHolder.deviceAddress.setText(device.getAddress());

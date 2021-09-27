@@ -727,7 +727,7 @@ public class BTHCommunication extends BITalinoCommunication {
                         } else {
                             if(isWaitingForState){
 
-                                byte[][] dataReceived = commandDecoder.parseReceivedData(CommandDecoder.CommandType.STATE, buffer, bytes, 16);
+                                byte[][] dataReceived = commandDecoder.parseReceivedData(CommandDecoder.CommandType.STATE, buffer, bytes, stateTotalBytes);
 
                                 for (byte[] byteArray : dataReceived) {
                                     if (byteArray != null) {

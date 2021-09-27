@@ -10,6 +10,7 @@ import android.os.*;
 import android.util.Log;
 import android.view.View;
 import android.widget.*;
+
 import info.plux.pluxapi.Communication;
 import info.plux.pluxapi.bitalino.*;
 import info.plux.pluxapi.bitalino.bth.OnBITalinoDataAvailable;
@@ -79,7 +80,7 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if(getIntent().hasExtra(EXTRA_DEVICE)){
+        if (getIntent().hasExtra(EXTRA_DEVICE)) {
             bluetoothDevice = getIntent().getParcelableExtra(EXTRA_DEVICE);
         }
 
@@ -88,18 +89,18 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
         initView();
         setUIElements();
 
-        handler = new Handler(getMainLooper()){
-          @Override
-          public void handleMessage(Message msg) {
-              Bundle bundle = msg.getData();
-              BITalinoFrame frame = bundle.getParcelable(FRAME);
+        handler = new Handler(getMainLooper()) {
+            @Override
+            public void handleMessage(Message msg) {
+                Bundle bundle = msg.getData();
+                BITalinoFrame frame = bundle.getParcelable(FRAME);
 
-              Log.d(TAG, frame.toString());
+                Log.d(TAG, frame.toString());
 
-              if(frame != null){ //BITalino
-                  resultsTextView.setText(frame.toString());
-              }
-          }
+                if (frame != null) { //BITalino
+                    resultsTextView.setText(frame.toString());
+                }
+            }
         };
     }
 
@@ -115,12 +116,12 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
     protected void onDestroy() {
         super.onDestroy();
 
-        if(isUpdateReceiverRegistered) {
+        if (isUpdateReceiverRegistered) {
             unregisterReceiver(updateReceiver);
             isUpdateReceiverRegistered = false;
         }
 
-        if(bitalino != null){
+        if (bitalino != null) {
             bitalino.closeReceivers();
             try {
                 bitalino.disconnect();
@@ -142,7 +143,7 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
     /*
      * UI elements
      */
-    private void initView(){
+    private void initView() {
         nameTextView = (TextView) findViewById(R.id.device_name_text_view);
         addressTextView = (TextView) findViewById(R.id.mac_address_text_view);
         elapsedTextView = (TextView) findViewById(R.id.elapsed_time_Text_view);
@@ -168,11 +169,10 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
         resultsTextView = (TextView) findViewById(R.id.results_text_view);
     }
 
-    private void setUIElements(){
-        if(bluetoothDevice.getName() == null){
+    private void setUIElements() {
+        if (bluetoothDevice.getName() == null) {
             nameTextView.setText("BITalino");
-        }
-        else {
+        } else {
             nameTextView.setText(bluetoothDevice.getName());
         }
         addressTextView.setText(bluetoothDevice.getAddress());
@@ -180,11 +180,11 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
 
         Communication communication = Communication.getById(bluetoothDevice.getType());
         Log.d(TAG, "Communication: " + communication.name());
-        if(communication.equals(Communication.DUAL)){
+        if (communication.equals(Communication.DUAL)) {
             communication = Communication.BTH;
         }
 
-        bitalino = new BITalinoCommunicationFactory().getCommunication(communication,this, this);
+        bitalino = new BITalinoCommunicationFactory().getCommunication(communication, this, this);
 //        bitalino2 = new BITalinoCommunicationFactory().getCommunication(communication,this, this);
 
         connectButton.setOnClickListener(this);
@@ -208,7 +208,7 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
         @Override
         public void onReceive(Context context, Intent intent) {
             final String action = intent.getAction();
-            if(ACTION_STATE_CHANGED.equals(action)){
+            if (ACTION_STATE_CHANGED.equals(action)) {
                 String identifier = intent.getStringExtra(IDENTIFIER);
                 States state = States.getStates(intent.getIntExtra(EXTRA_STATE_CHANGED, 0));
 
@@ -216,49 +216,38 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
 
                 stateTextView.setText(state.name());
 
-                switch (state){
+                switch (state) {
                     case NO_CONNECTION:
-                        break;
                     case LISTEN:
-                        break;
                     case CONNECTING:
-                        break;
-                    case CONNECTED:
-                        break;
                     case ACQUISITION_TRYING:
-                        break;
                     case ACQUISITION_OK:
-                        break;
                     case ACQUISITION_STOPPING:
-                        break;
                     case DISCONNECTED:
-                        break;
+                    case CONNECTED:
                     case ENDED:
                         break;
 
                 }
-            }
-            else if(ACTION_DATA_AVAILABLE.equals(action)){
-                if(intent.hasExtra(EXTRA_DATA)){
+            } else if (ACTION_DATA_AVAILABLE.equals(action)) {
+                if (intent.hasExtra(EXTRA_DATA)) {
                     Parcelable parcelable = intent.getParcelableExtra(EXTRA_DATA);
-                    if(parcelable.getClass().equals(BITalinoFrame.class)){ //BITalino
+                    if (parcelable.getClass().equals(BITalinoFrame.class)) { //BITalino
                         BITalinoFrame frame = (BITalinoFrame) parcelable;
                         resultsTextView.setText(frame.toString());
                     }
                 }
-            }
-            else if(ACTION_COMMAND_REPLY.equals(action)){
+            } else if (ACTION_COMMAND_REPLY.equals(action)) {
                 String identifier = intent.getStringExtra(IDENTIFIER);
 
-                if(intent.hasExtra(EXTRA_COMMAND_REPLY) && (intent.getParcelableExtra(EXTRA_COMMAND_REPLY) != null)){
+                if (intent.hasExtra(EXTRA_COMMAND_REPLY) && (intent.getParcelableExtra(EXTRA_COMMAND_REPLY) != null)) {
                     Parcelable parcelable = intent.getParcelableExtra(EXTRA_COMMAND_REPLY);
-                    if(parcelable.getClass().equals(BITalinoState.class)){ //BITalino
-                        Log.d(TAG, ((BITalinoState)parcelable).toString());
+                    if (parcelable.getClass().equals(BITalinoState.class)) { //BITalino
+                        Log.d(TAG, ((BITalinoState) parcelable).toString());
                         resultsTextView.setText(parcelable.toString());
-                    }
-                    else if(parcelable.getClass().equals(BITalinoDescription.class)){ //BITalino
-                        isBITalino2 = ((BITalinoDescription)parcelable).isBITalino2();
-                        resultsTextView.setText("isBITalino2: " + isBITalino2 + "; FwVersion: " + String.valueOf(((BITalinoDescription)parcelable).getFwVersion()));
+                    } else if (parcelable.getClass().equals(BITalinoDescription.class)) { //BITalino
+                        isBITalino2 = ((BITalinoDescription) parcelable).isBITalino2();
+                        resultsTextView.setText("isBITalino2: " + isBITalino2 + "; FwVersion: " + String.valueOf(((BITalinoDescription) parcelable).getFwVersion()));
 
 //                        if(identifier.equals(identifierBITalino2) && bitalino2 != null){
 //                            try {
@@ -298,125 +287,96 @@ public class DeviceActivity extends Activity implements OnBITalinoDataAvailable,
 
     @Override
     public void onClick(View view) {
-        switch (view.getId()){
-            case R.id.connect_button:
-                try {
-                    bitalino.connect(bluetoothDevice.getAddress());
-                } catch (BITalinoException e) {
-                    e.printStackTrace();
-                }
+
+        if (view.getId() == R.id.connect_button) {
+            try {
+                bitalino.connect(bluetoothDevice.getAddress());
+            } catch (BITalinoException e) {
+                e.printStackTrace();
+            }
 
 //                try {
 //                    bitalino2.connect(identifierBITalino2);
 //                } catch (BITalinoException e) {
 //                    e.printStackTrace();
 //                }
-                break;
-            case R.id.disconnect_button:
-                try {
-                    bitalino.disconnect();
-                } catch (BITalinoException e) {
-                    e.printStackTrace();
-                }
+        } else if (view.getId() == R.id.disconnect_button) {
+            try {
+                bitalino.disconnect();
+            } catch (BITalinoException e) {
+                e.printStackTrace();
+            }
 
 //                try {
 //                    bitalino2.disconnect();
 //                } catch (BITalinoException e) {
 //                    e.printStackTrace();
 //                }
-                break;
-            case R.id.start_button:
-                try {
-                    bitalino.start(new int[]{0,1,2,3,4,5}, 1);
-                } catch (BITalinoException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.stop_button:
-                try {
-                    bitalino.stop();
-                } catch (BITalinoException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.state_button:
-                try {
-                    bitalino.state();
-                } catch (BITalinoException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.trigger_button:
-                int[] digitalChannels;
-                if(isBITalino2){
-                    digitalChannels = new int[2];
-                }
-                else{
-                    digitalChannels = new int[4];
-                }
+        } else if (view.getId() == R.id.start_button) {
+            try {
+                bitalino.start(new int[]{0, 1, 2, 3, 4, 5}, 1);
+            } catch (BITalinoException e) {
+                e.printStackTrace();
+            }
+        } else if (view.getId() == R.id.stop_button) {
+            try {
+                bitalino.stop();
+            } catch (BITalinoException e) {
+                e.printStackTrace();
+            }
+        } else if (view.getId() == R.id.state_button) {
+            try {
+                bitalino.state();
+            } catch (BITalinoException e) {
+                e.printStackTrace();
+            }
+        } else if (view.getId() == R.id.trigger_button) {
+            int[] digitalChannels;
+            if (isBITalino2) {
+                digitalChannels = new int[2];
+            } else {
+                digitalChannels = new int[4];
+            }
 
-                digitalChannels[0] = (digital1RadioButton.isChecked()) ? 1 : 0;
-                digitalChannels[1] = (digital2RadioButton.isChecked()) ? 1 : 0;
+            digitalChannels[0] = (digital1RadioButton.isChecked()) ? 1 : 0;
+            digitalChannels[1] = (digital2RadioButton.isChecked()) ? 1 : 0;
 
-                if(!isBITalino2){
-                    digitalChannels[2] = (digital3RadioButton.isChecked()) ? 1 : 0;
-                    digitalChannels[3] = (digital4RadioButton.isChecked()) ? 1 : 0;
-                }
+            if (!isBITalino2) {
+                digitalChannels[2] = (digital3RadioButton.isChecked()) ? 1 : 0;
+                digitalChannels[3] = (digital4RadioButton.isChecked()) ? 1 : 0;
+            }
 
-                try {
-                    bitalino.trigger(digitalChannels);
-                } catch (BITalinoException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.digital_1_radio_button:
-                if(isDigital1RadioButtonChecked){
-                    digital1RadioButton.setChecked(false);
-                }
-                else{
-                    digital1RadioButton.setChecked(true);
-                }
-                isDigital1RadioButtonChecked = digital1RadioButton.isChecked();
-                break;
-            case R.id.digital_2_radio_button:
-                if(isDigital2RadioButtonChecked){
-                    digital2RadioButton.setChecked(false);
-                }
-                else{
-                    digital2RadioButton.setChecked(true);
-                }
-                isDigital2RadioButtonChecked = digital2RadioButton.isChecked();
-                break;
-            case R.id.digital_3_radio_button:
-                if(digital3RadioButton.isChecked()){
-                    digital3RadioButton.setChecked(false);
-                }
-                else{
-                    digital3RadioButton.setChecked(true);
-                }
-                break;
-            case R.id.digital_4_radio_button:
-                if(digital4RadioButton.isChecked()){
-                    digital4RadioButton.setChecked(false);
-                }
-                else{
-                    digital4RadioButton.setChecked(true);
-                }
-                break;
-            case R.id.battery_threshold_button:
-                try {
-                    bitalino.battery(batteryThresholdSeekBar.getProgress());
-                } catch (BITalinoException e) {
-                    e.printStackTrace();
-                }
-                break;
-            case R.id.pwm_button:
-                try {
-                    bitalino.pwm(pwmSeekBar.getProgress());
-                } catch (BITalinoException e) {
-                    e.printStackTrace();
-                }
-                break;
+            try {
+                bitalino.trigger(digitalChannels);
+            } catch (BITalinoException e) {
+                e.printStackTrace();
+            }
+        } else if (view.getId() == R.id.digital_1_radio_button) {
+            digital1RadioButton.setChecked(!isDigital1RadioButtonChecked);
+
+            isDigital1RadioButtonChecked = digital1RadioButton.isChecked();
+        } else if (view.getId() == R.id.digital_2_radio_button) {
+            digital2RadioButton.setChecked(!isDigital2RadioButtonChecked);
+            isDigital2RadioButtonChecked = digital2RadioButton.isChecked();
+
+        } else if (view.getId() == R.id.digital_3_radio_button) {
+            digital3RadioButton.setChecked(!digital3RadioButton.isChecked());
+
+        } else if (view.getId() == R.id.digital_4_radio_button) {
+            digital4RadioButton.setChecked(!digital4RadioButton.isChecked());
+
+        } else if (view.getId() == R.id.battery_threshold_button) {
+            try {
+                bitalino.battery(batteryThresholdSeekBar.getProgress());
+            } catch (BITalinoException e) {
+                e.printStackTrace();
+            }
+        } else if (view.getId() == R.id.pwm_button) {
+            try {
+                bitalino.pwm(pwmSeekBar.getProgress());
+            } catch (BITalinoException e) {
+                e.printStackTrace();
+            }
         }
     }
 }

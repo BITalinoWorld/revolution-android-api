@@ -1,12 +1,12 @@
 /*
-*
-* Copyright (c) PLUX S.A., All Rights Reserved.
-* (www.plux.info)
-*
-* This software is the proprietary information of PLUX S.A.
-* Use is subject to license terms.
-*
-*/
+ *
+ * Copyright (c) PLUX S.A., All Rights Reserved.
+ * (www.plux.info)
+ *
+ * This software is the proprietary information of PLUX S.A.
+ * Use is subject to license terms.
+ *
+ */
 package info.plux.pluxapi.bitalino.ble;
 
 import android.annotation.TargetApi;
@@ -19,6 +19,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Build;
 import android.util.Log;
+
 import info.plux.pluxapi.CommandArguments;
 import info.plux.pluxapi.bitalino.*;
 
@@ -39,27 +40,27 @@ public class BLECommunication extends BITalinoCommunication {
     private final static UUID UUID_COMMANDS = UUID.fromString(PluxGattAttributes.COMMANDS);
     private final static UUID UUID_FRAMES = UUID.fromString(PluxGattAttributes.FRAMES);
     //Log Types
-    private final int LOG_CONNECTED          = 0;
-    private final int LOG_DISCONNECTED       = 1;
-    private final int LOG_READY              = 2;
-    private final int LOG_DATA_STREAM        = 3;
-    private final int LOG_SEARCH_SERVICES    = 4;
-    private final int LOG_ENABLE_COMMANDS    = 5;
-    private final int LOG_ENABLE_FRAMES      = 6;
-    private final int LOG_START              = 7;
-    private final int LOG_STOP               = 8;
+    private final int LOG_CONNECTED = 0;
+    private final int LOG_DISCONNECTED = 1;
+    private final int LOG_READY = 2;
+    private final int LOG_DATA_STREAM = 3;
+    private final int LOG_SEARCH_SERVICES = 4;
+    private final int LOG_ENABLE_COMMANDS = 5;
+    private final int LOG_ENABLE_FRAMES = 6;
+    private final int LOG_START = 7;
+    private final int LOG_STOP = 8;
     //Log alarm String constants
-    private final String LOG_ALARM                   = "info.plux.api.bioplux.ble.BLECommunication.LOG_ALARM";
-    private final String LOG_ALARM_EXTRA_ID          = "info.plux.api.bioplux.ble.BLECommunication.LOG_ALARM_EXTRA_ID";
-    private final String LOG_ALARM_EXTRA_ACTION      = "info.plux.api.bioplux.ble.BLECommunication.LOG_ALARM_EXTRA_ACTION";
-    private final String LOG_ALARM_EXTRA_IDENTIFIER  = "info.plux.api.bioplux.ble.BLECommunication.LOG_ALARM_EXTRA_IDENTIFIER";
+    private final String LOG_ALARM = "info.plux.api.bioplux.ble.BLECommunication.LOG_ALARM";
+    private final String LOG_ALARM_EXTRA_ID = "info.plux.api.bioplux.ble.BLECommunication.LOG_ALARM_EXTRA_ID";
+    private final String LOG_ALARM_EXTRA_ACTION = "info.plux.api.bioplux.ble.BLECommunication.LOG_ALARM_EXTRA_ACTION";
+    private final String LOG_ALARM_EXTRA_IDENTIFIER = "info.plux.api.bioplux.ble.BLECommunication.LOG_ALARM_EXTRA_IDENTIFIER";
     //Log Time Constants
     private final int NOW = 0;
     private final int WAIT_TIME_1SECONDS = 1000;
-    private final int WAIT_TIME_2SECONDS = 2*WAIT_TIME_1SECONDS;
-    private final int WAIT_TIME_3SECONDS = 3*WAIT_TIME_1SECONDS;
-    private final int WAIT_TIME_5SECONDS = 5*WAIT_TIME_1SECONDS;
-    private final String commandsAction  = "COMMANDS - Error on notification enable";
+    private final int WAIT_TIME_2SECONDS = 2 * WAIT_TIME_1SECONDS;
+    private final int WAIT_TIME_3SECONDS = 3 * WAIT_TIME_1SECONDS;
+    private final int WAIT_TIME_5SECONDS = 5 * WAIT_TIME_1SECONDS;
+    private final String commandsAction = "COMMANDS - Error on notification enable";
     private final Context activityContext;
     private BluetoothManager mBluetoothManager;
     private BluetoothAdapter mBluetoothAdapter;
@@ -114,7 +115,7 @@ public class BLECommunication extends BITalinoCommunication {
                 setLogAlarm(LOG_SEARCH_SERVICES, WAIT_TIME_1SECONDS);
                 setLogAlarm(LOG_CONNECTED, NOW);
 
-                if(isDataStreamingAlarmSet){
+                if (isDataStreamingAlarmSet) {
                     setLogAlarm(LOG_DATA_STREAM, WAIT_TIME_3SECONDS);
                 }
 
@@ -171,7 +172,7 @@ public class BLECommunication extends BITalinoCommunication {
 
         @Override
         public void onDescriptorWrite(BluetoothGatt gatt, BluetoothGattDescriptor descriptor, int status) {
-            Log.i(TAG, mBluetoothDeviceAddress + " - onDescriptorWrite " +  " - " + descriptor.getUuid() + " status: " + status);
+            Log.i(TAG, mBluetoothDeviceAddress + " - onDescriptorWrite " + " - " + descriptor.getUuid() + " status: " + status);
             if (status == BluetoothGatt.GATT_SUCCESS) {
                 if ((descriptor.getCharacteristic().getUuid()).equals(UUID.fromString(PluxGattAttributes.COMMANDS))) {
                     //enable indications - Frames Characteristic
@@ -180,10 +181,10 @@ public class BLECommunication extends BITalinoCommunication {
                     Log.i(TAG, mBluetoothDeviceAddress + " - Commands " + status);
                     isCommandsEnabled = true;
 
-                    if(initialReconnectTimeStamp != 0){
+                    if (initialReconnectTimeStamp != 0) {
                         long finalReconnectTimeStamp = Calendar.getInstance().getTimeInMillis();
                         long deltaReconnect = finalReconnectTimeStamp - initialReconnectTimeStamp;
-                        Log.d(TAG, "[" + mBluetoothDeviceAddress + "] " + "Reconnect Time: " + Math.round(deltaReconnect/1000) + " s");
+                        Log.d(TAG, "[" + mBluetoothDeviceAddress + "] " + "Reconnect Time: " + Math.round(deltaReconnect / 1000) + " s");
                         initialReconnectTimeStamp = 0;
                     }
 
@@ -201,10 +202,10 @@ public class BLECommunication extends BITalinoCommunication {
                         e.printStackTrace();
                     }
 
-                    if(initialReconnectTimeStamp != 0){
+                    if (initialReconnectTimeStamp != 0) {
                         long finalReconnectTimeStamp = Calendar.getInstance().getTimeInMillis();
                         long deltaReconnect = finalReconnectTimeStamp - initialReconnectTimeStamp;
-                        Log.d(TAG, "[" + mBluetoothDeviceAddress + "] " + "Reconnect Time: " + Math.round(deltaReconnect/1000) + " s");
+                        Log.d(TAG, "[" + mBluetoothDeviceAddress + "] " + "Reconnect Time: " + Math.round(deltaReconnect / 1000) + " s");
                         initialReconnectTimeStamp = 0;
                     }
 
@@ -212,7 +213,7 @@ public class BLECommunication extends BITalinoCommunication {
                     isFramesEnabled = true;
                 }
             } else {
-                switch (status){
+                switch (status) {
                     case 132:
                         Log.e(TAG, "descriptor write error " + status + " -> GATT_BUSY");
                         break;
@@ -272,10 +273,9 @@ public class BLECommunication extends BITalinoCommunication {
                     case LOG_DATA_STREAM:
 
                         long deltaTime;
-                        if(lastSampleTimeStamp == -1){
+                        if (lastSampleTimeStamp == -1) {
                             deltaTime = WAIT_TIME_2SECONDS;
-                        }
-                        else {
+                        } else {
                             deltaTime = Calendar.getInstance().getTimeInMillis() - lastSampleTimeStamp;
                         }
 
@@ -338,7 +338,6 @@ public class BLECommunication extends BITalinoCommunication {
     }
 
 
-
     @Override
     public void init() {
 
@@ -364,7 +363,7 @@ public class BLECommunication extends BITalinoCommunication {
 
     @Override
     public void closeReceivers() {
-        if(isLogAlarmRegistered){
+        if (isLogAlarmRegistered) {
             activityContext.unregisterReceiver(LogAlarmReceiver);
             isLogAlarmRegistered = false;
         }
@@ -400,6 +399,7 @@ public class BLECommunication extends BITalinoCommunication {
 
     private int k = 0;
     private byte[] buffer = new byte[totalBytes];
+
     @TargetApi(Build.VERSION_CODES.KITKAT)
     private void broadcastUpdate(final BluetoothGattCharacteristic characteristic) {
         final Intent intent = new Intent(ACTION_DATA_AVAILABLE);
@@ -408,7 +408,7 @@ public class BLECommunication extends BITalinoCommunication {
             // For all other profiles, writes the data formatted in HEX.
             final byte[] data = characteristic.getValue();
             if (data != null && data.length > 0) {
-                if(currentState == States.ACQUISITION_OK) {
+                if (currentState == States.ACQUISITION_OK) {
                     //parse frames
                     for (byte aData : data) {
                         buffer[k] = aData;
@@ -439,10 +439,9 @@ public class BLECommunication extends BITalinoCommunication {
                             previousSeq = bitatinoFrame.getSequence();
                         }
                     }
-                }
-                else {
+                } else {
 
-                    if(isWaitingForState){
+                    if (isWaitingForState) {
                         BITalinoState bitalinoState = null;
 
                         try {
@@ -459,14 +458,13 @@ public class BLECommunication extends BITalinoCommunication {
                         stateIntent.putExtra(IDENTIFIER, mBluetoothDeviceAddress);
                         stateIntent.putExtra(EXTRA_COMMAND_REPLY, bitalinoState);
                         activityContext.sendBroadcast(stateIntent);
-                    }
-                    else if(isWaitingForVersion){
+                    } else if (isWaitingForVersion) {
                         String[] versionArray = new String(data, StandardCharsets.UTF_8).split("_v");
 
                         if (Float.parseFloat(versionArray[1]) >= 5) {
                             isBITalino2 = true;
                             Log.d(TAG, "isBITalino2: " + isBITalino2 + " -> " + Float.parseFloat(versionArray[1]));
-                            if(Float.parseFloat(versionArray[1]) >= 5.2f){
+                            if (Float.parseFloat(versionArray[1]) >= 5.2f) {
                                 isStateCorrect = true;
                                 stateTotalBytes = 17;
                             }
@@ -487,7 +485,7 @@ public class BLECommunication extends BITalinoCommunication {
             final byte[] data = characteristic.getValue();
             if (data != null && data.length > 0) {
                 Log.d(TAG, "UUID_COMMANDS -> data.length: " + data.length);
-                if(currentState == States.ACQUISITION_OK) {
+                if (currentState == States.ACQUISITION_OK) {
                     Log.d(TAG, "data.length: " + data.length);
                     //parse frames
                     for (byte aData : data) {
@@ -508,7 +506,9 @@ public class BLECommunication extends BITalinoCommunication {
 
                             buffer = new byte[totalBytes];
 
-                            if (bitatinoFrame.getSequence() - previousSeq != 1 && previousSeq - bitatinoFrame.getSequence() != 0 && Math.abs(previousSeq - bitatinoFrame.getSequence()) != 15) {
+                            if (bitatinoFrame.getSequence() - previousSeq != 1
+                                    && previousSeq - bitatinoFrame.getSequence() != 0
+                                    && Math.abs(previousSeq - bitatinoFrame.getSequence()) != 15) {
                                 int nSeq = bitatinoFrame.getSequence() - previousSeq;
                                 Log.e(TAG, "[" + mBluetoothDeviceAddress + "] " + "Seq: " + nSeq);
                             }
@@ -519,8 +519,7 @@ public class BLECommunication extends BITalinoCommunication {
                             previousSeq = bitatinoFrame.getSequence();
                         }
                     }
-                }
-                else {
+                } else {
                     String description = null;
                     try {
                         description = new String(data, "UTF-8");
@@ -555,7 +554,7 @@ public class BLECommunication extends BITalinoCommunication {
     @Override
     public boolean start(int[] analogChannels, int sampleRate) throws BITalinoException {
         boolean flag = false;
-        if(isConnected) {
+        if (isConnected) {
             if (currentState.equals(States.CONNECTED)) {
                 this.analogChannels = validateAnalogChannels(analogChannels);
                 this.totalBytes = calculateTotalBytes(analogChannels);
@@ -579,7 +578,7 @@ public class BLECommunication extends BITalinoCommunication {
 
                 inAcquisition = true;
 
-                if(isDataStreamingAlarmSet){
+                if (isDataStreamingAlarmSet) {
                     setLogAlarm(LOG_DATA_STREAM, WAIT_TIME_3SECONDS);
                 }
 
@@ -605,7 +604,7 @@ public class BLECommunication extends BITalinoCommunication {
     @Override
     public boolean stop() throws BITalinoException {
         boolean flag = false;
-        if(isConnected) {
+        if (isConnected) {
             if (currentState.equals(States.ACQUISITION_OK)) {
 
                 CommandArguments commandArguments = new CommandArguments();
@@ -631,7 +630,7 @@ public class BLECommunication extends BITalinoCommunication {
     public boolean connect(String address) throws BITalinoException {
         mBluetoothDeviceAddress = address;
 
-        if(currentState.equals(States.DISCONNECTED) || currentState.equals(States.ENDED) || currentState.equals(States.NO_CONNECTION)) {
+        if (currentState.equals(States.DISCONNECTED) || currentState.equals(States.ENDED) || currentState.equals(States.NO_CONNECTION)) {
             if (mBluetoothAdapter == null || address == null) {
                 Log.w(TAG, "BluetoothAdapter not initialized or unspecified address.");
                 return false;
@@ -667,8 +666,7 @@ public class BLECommunication extends BITalinoCommunication {
             Log.d(TAG, mBluetoothDeviceAddress + " - Trying to create a new connection.");
 
             setState(States.CONNECTING);
-        }
-        else{
+        } else {
             throw new BITalinoException(BITalinoErrorTypes.DEVICE_NOT_IDLE);
         }
 
@@ -678,7 +676,7 @@ public class BLECommunication extends BITalinoCommunication {
     @Override
     public void disconnect() throws BITalinoException {
 
-        if(currentState.equals(States.CONNECTED) || currentState.equals(States.ACQUISITION_OK)) {
+        if (currentState.equals(States.CONNECTED) || currentState.equals(States.ACQUISITION_OK)) {
 
             if (mBluetoothAdapter == null || mBluetoothGatt == null) {
                 Log.w(TAG, "BluetoothAdapter not initialized");
@@ -692,8 +690,7 @@ public class BLECommunication extends BITalinoCommunication {
             closeReceivers();
 
             mBluetoothGatt.disconnect();
-        }
-        else{
+        } else {
             throw new BITalinoException(BITalinoErrorTypes.BT_DEVICE_NOT_CONNECTED);
         }
     }
@@ -701,8 +698,8 @@ public class BLECommunication extends BITalinoCommunication {
     @Override
     public boolean getVersion() throws BITalinoException {
         boolean flag = false;
-        if(isConnected) {
-            if(!inAcquisition) {
+        if (isConnected) {
+            if (!inAcquisition) {
 
                 CommandArguments commandArguments = new CommandArguments();
                 commandArguments.setBLE(false);
@@ -724,10 +721,10 @@ public class BLECommunication extends BITalinoCommunication {
     @Override
     public boolean battery(int value) throws BITalinoException {
         boolean flag = false;
-        if(isConnected) {
-            if(!inAcquisition) {
+        if (isConnected) {
+            if (!inAcquisition) {
 
-                if(value < 0 || value > 63){
+                if (value < 0 || value > 63) {
                     throw new BITalinoException(BITalinoErrorTypes.INVALID_PARAMETER);
                 }
 
@@ -752,7 +749,7 @@ public class BLECommunication extends BITalinoCommunication {
     @Override
     public boolean trigger(int[] digitalChannels) throws BITalinoException {
         boolean flag = false;
-        if(isConnected) {
+        if (isConnected) {
             if (digitalChannels.length != 0 && digitalChannels.length != 2) {
                 throw new BITalinoException(BITalinoErrorTypes.INVALID_PARAMETER);
             }
@@ -773,9 +770,9 @@ public class BLECommunication extends BITalinoCommunication {
     @Override
     public boolean state() throws BITalinoException {
         boolean flag = false;
-        if(isConnected) {
-            if(isBITalino2) {
-                if(!inAcquisition) {
+        if (isConnected) {
+            if (isBITalino2) {
+                if (!inAcquisition) {
 
                     CommandArguments commandArguments = new CommandArguments();
 
@@ -787,8 +784,7 @@ public class BLECommunication extends BITalinoCommunication {
                 } else {
                     throw new BITalinoException(BITalinoErrorTypes.DEVICE_NOT_IDLE);
                 }
-            }
-            else {
+            } else {
                 throw new BITalinoException(BITalinoErrorTypes.NOT_SUPPORTED);
             }
 
@@ -801,10 +797,10 @@ public class BLECommunication extends BITalinoCommunication {
     @Override
     public boolean pwm(int pwmOutput) throws BITalinoException {
         boolean flag = false;
-        if(isConnected) {
-            if(isBITalino2) {
+        if (isConnected) {
+            if (isBITalino2) {
 
-                if(pwmOutput < 0 || pwmOutput > 255){
+                if (pwmOutput < 0 || pwmOutput > 255) {
                     throw new BITalinoException(BITalinoErrorTypes.INVALID_PARAMETER);
                 }
 
@@ -821,11 +817,11 @@ public class BLECommunication extends BITalinoCommunication {
                     e.printStackTrace();
                 }
 
-                flag = writeCharacteristic(characteristicCommands, new byte[]{(byte)(pwmOutput)});
+                flag = writeCharacteristic(characteristicCommands, new byte[]{(byte) (pwmOutput)});
 
 
-            }else {
-                    throw new BITalinoException(BITalinoErrorTypes.NOT_SUPPORTED);
+            } else {
+                throw new BITalinoException(BITalinoErrorTypes.NOT_SUPPORTED);
             }
         } else {
             throw new BITalinoException(BITalinoErrorTypes.BT_DEVICE_NOT_CONNECTED);
@@ -873,7 +869,7 @@ public class BLECommunication extends BITalinoCommunication {
 //                }
 
                 //Set commands characteristic notification
-                if(gattService.getUuid().equals(UUID.fromString(PluxGattAttributes.DataS))) {
+                if (gattService.getUuid().equals(UUID.fromString(PluxGattAttributes.DataS))) {
                     setCharacteristicNotification(pluxCharacteristics.get(0));
                 }
 
@@ -885,8 +881,8 @@ public class BLECommunication extends BITalinoCommunication {
 
     /**
      * Enables or disables notification on a give characteristic.
-     *  @param characteristic Characteristic to act on.
      *
+     * @param characteristic Characteristic to act on.
      */
     private void setCharacteristicNotification(BluetoothGattCharacteristic characteristic) {
         if (mBluetoothAdapter == null || mBluetoothGatt == null) {
@@ -981,7 +977,7 @@ public class BLECommunication extends BITalinoCommunication {
         alarmManager.set(AlarmManager.RTC_WAKEUP, Calendar.getInstance().getTimeInMillis() + WAIT_TIME_1SECONDS, pendingIntent);
     }
 
-    private void cancelLogAlarm(int id){
+    private void cancelLogAlarm(int id) {
         AlarmManager alarmManager = (AlarmManager) activityContext.getSystemService(Context.ALARM_SERVICE);
         Intent alarmIntent = new Intent(LOG_ALARM);
         PendingIntent pendingIntent = PendingIntent.getBroadcast(activityContext, id, alarmIntent, PendingIntent.FLAG_ONE_SHOT);
@@ -989,10 +985,10 @@ public class BLECommunication extends BITalinoCommunication {
         alarmManager.cancel(pendingIntent);
     }
 
-    private void reconnect(){
+    private void reconnect() {
         Log.d(TAG, "reconnect()");
 
-        if(!disconnectFired) {
+        if (!disconnectFired) {
 
             isReady = false;
             isConnected = false;
